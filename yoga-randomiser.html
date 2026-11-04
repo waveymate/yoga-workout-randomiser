@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yoga Randomiser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f0ede8;
+    --surface: #faf9f7;
+    --text: #2a2520;
+    --muted: #9a9088;
+    --border: #e0dbd4;
+    --standing: #e8ede0;
+    --standing-text: #3a5228;
+    --seated: #e6eaf4;
+    --seated-text: #2a3d6e;
+    --balance: #f4ece6;
+    --balance-text: #7a3a1e;
+    --restorative: #f0e8f0;
+    --restorative-text: #5a2d6e;
+    --btn-bg: #2a2520;
+    --btn-text: #faf9f7;
+  }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .header {
+    margin-bottom: 1.75rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.25rem;
+  }
+
+  .title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text);
+    letter-spacing: 0.01em;
+    margin-bottom: 4px;
+  }
+
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .date-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .duration {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+
+  .cat-block {
+    border-radius: 14px;
+    padding: 14px;
+  }
+
+  .cat-block.standing     { background: var(--standing); }
+  .cat-block.seated       { background: var(--seated); }
+  .cat-block.balance      { background: var(--balance); }
+  .cat-block.restorative  { background: var(--restorative); }
+
+  .cat-label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .cat-block.standing    .cat-label { color: var(--standing-text); }
+  .cat-block.seated      .cat-label { color: var(--seated-text); }
+  .cat-block.balance     .cat-label { color: var(--balance-text); }
+  .cat-block.restorative .cat-label { color: var(--restorative-text); }
+
+  .pose {
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+  }
+  .pose:last-child { border-bottom: none; }
+
+  .pose-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.25;
+  }
+
+  .pose-sanskrit {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  .pose-hold {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+    letter-spacing: 0.03em;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-roll {
+    flex: 1;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    border-radius: 12px;
+    padding: 13px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.15s;
+  }
+
+  .btn-roll:hover { opacity: 0.82; }
+  .btn-roll:active { transform: scale(0.98); }
+
+  .btn-copy {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn-copy:hover { background: var(--bg); }
+  .btn-copy:active { transform: scale(0.98); }
+
+  .confirm {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--standing-text);
+    text-align: center;
+    margin-top: 10px;
+    min-height: 14px;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .confirm.show { opacity: 1; }
+
+  @keyframes rise {
+    0%   { transform: translateY(4px); opacity: 0.5; }
+    100% { transform: translateY(0);   opacity: 1; }
+  }
+
+  .cat-block.animate { animation: rise 0.3s ease forwards; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <div class="title">Yoga practice</div>
+    <div class="meta">
+      <span class="date-label" id="date-label"></span>
+      <span class="duration" id="duration-label"></span>
+    </div>
+  </div>
+
+  <div class="grid" id="yoga-grid"></div>
+
+  <div class="actions">
+    <button class="btn-roll" id="roll-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+      New sequence
+    </button>
+    <button class="btn-copy" id="copy-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy
+    </button>
+  </div>
+  <p class="confirm" id="confirm-msg">Copied to clipboard</p>
+</div>
+
+<script>
+const categories = [
+  {
+    key: "standing",
+    label: "Standing",
+    poses: [
+      { name: "Mountain",         sanskrit: "Tadasana",          hold: "5 breaths" },
+      { name: "Warrior I",        sanskrit: "Virabhadrasana I",  hold: "5 breaths each" },
+      { name: "Warrior II",       sanskrit: "Virabhadrasana II", hold: "5 breaths each" },
+      { name: "Triangle",         sanskrit: "Trikonasana",       hold: "5 breaths each" },
+      { name: "Chair",            sanskrit: "Utkatasana",        hold: "5 breaths" },
+      { name: "Forward fold",     sanskrit: "Uttanasana",        hold: "8 breaths" },
+      { name: "Crescent lunge",   sanskrit: "Anjaneyasana",      hold: "5 breaths each" },
+      { name: "Wide-leg forward fold", sanskrit: "Prasarita Padottanasana", hold: "8 breaths" },
+    ]
+  },
+  {
+    key: "seated",
+    label: "Seated & floor",
+    poses: [
+      { name: "Seated forward fold", sanskrit: "Paschimottanasana", hold: "8 breaths" },
+      { name: "Butterfly",           sanskrit: "Baddha Konasana",    hold: "8 breaths" },
+      { name: "Half lord of fish",   sanskrit: "Ardha Matsyendrasana", hold: "5 breaths each" },
+      { name: "Cat-cow",             sanskrit: "Marjaryasana",        hold: "8 rounds" },
+      { name: "Child's pose",        sanskrit: "Balasana",            hold: "10 breaths" },
+      { name: "Downward dog",        sanskrit: "Adho Mukha Svanasana", hold: "8 breaths" },
+      { name: "Pigeon",              sanskrit: "Eka Pada Rajakapotasana", hold: "10 breaths each" },
+      { name: "Bridge",              sanskrit: "Setu Bandha Sarvangasana", hold: "5 breaths" },
+    ]
+  },
+  {
+    key: "balance",
+    label: "Balance",
+    poses: [
+      { name: "Tree",           sanskrit: "Vrksasana",         hold: "5 breaths each" },
+      { name: "Warrior III",   sanskrit: "Virabhadrasana III", hold: "5 breaths each" },
+      { name: "Eagle",         sanskrit: "Garudasana",         hold: "5 breaths each" },
+      { name: "Half moon",     sanskrit: "Ardha Chandrasana",  hold: "5 breaths each" },
+      { name: "Dancer",        sanskrit: "Natarajasana",       hold: "5 breaths each" },
+      { name: "Crow",          sanskrit: "Bakasana",           hold: "3–5 breaths" },
+      { name: "Extended hand-to-toe", sanskrit: "Utthita Hasta Padangusthasana", hold: "5 breaths each" },
+    ]
+  },
+  {
+    key: "restorative",
+    label: "Restorative",
+    poses: [
+      { name: "Legs up the wall",  sanskrit: "Viparita Karani",  hold: "2 min" },
+      { name: "Supine twist",      sanskrit: "Supta Matsyendrasana", hold: "1 min each" },
+      { name: "Happy baby",        sanskrit: "Ananda Balasana",  hold: "10 breaths" },
+      { name: "Reclined butterfly",sanskrit: "Supta Baddha Konasana", hold: "2 min" },
+      { name: "Corpse",            sanskrit: "Savasana",         hold: "3–5 min" },
+      { name: "Seated meditation", sanskrit: "Sukhasana",        hold: "3 min" },
+      { name: "Knees to chest",    sanskrit: "Apanasana",        hold: "10 breaths" },
+    ]
+  }
+];
+
+function pick2(arr) {
+  return [...arr].sort(() => Math.random() - 0.5).slice(0, 2);
+}
+
+let current = [];
+
+function totalMins(picks) {
+  const all = picks.flatMap(c => c.picks);
+  let total = 0;
+  all.forEach(p => {
+    const h = p.hold;
+    if (h.includes("min")) {
+      const m = parseFloat(h);
+      total += isNaN(m) ? 2 : m;
+    } else {
+      const b = parseInt(h);
+      total += isNaN(b) ? 1 : Math.round(b * 0.3);
+    }
+  });
+  return Math.max(1, Math.round(total));
+}
+
+function render(animate) {
+  const grid = document.getElementById("yoga-grid");
+  current = categories.map(cat => ({ ...cat, picks: pick2(cat.poses) }));
+  grid.innerHTML = "";
+  current.forEach(cat => {
+    const block = document.createElement("div");
+    block.className = "cat-block " + cat.key + (animate ? " animate" : "");
+    block.innerHTML = `
+      <div class="cat-label">${cat.label}</div>
+      ${cat.picks.map(p => `
+        <div class="pose">
+          <div class="pose-name">${p.name}</div>
+          <div class="pose-sanskrit">${p.sanskrit}</div>
+          <div class="pose-hold">${p.hold}</div>
+        </div>`).join("")}
+    `;
+    grid.appendChild(block);
+  });
+  document.getElementById("duration-label").textContent = "~" + totalMins(current) + " min";
+  document.getElementById("confirm-msg").classList.remove("show");
+}
+
+document.getElementById("roll-btn").addEventListener("click", () => render(true));
+
+document.getElementById("copy-btn").addEventListener("click", () => {
+  const date = document.getElementById("date-label").textContent;
+  const dur  = document.getElementById("duration-label").textContent;
+  let text = `Yoga practice — ${date} (${dur})\n\n`;
+  current.forEach(cat => {
+    text += cat.label.toUpperCase() + "\n";
+    cat.picks.forEach(p => { text += `• ${p.name} (${p.sanskrit})  ${p.hold}\n`; });
+    text += "\n";
+  });
+  navigator.clipboard.writeText(text.trim()).then(() => {
+    const msg = document.getElementById("confirm-msg");
+    msg.classList.add("show");
+    setTimeout(() => msg.classList.remove("show"), 2500);
+  });
+});
+
+const d = new Date();
+document.getElementById("date-label").textContent =
+  d.toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" });
+
+render(false);
+</script>
+</body>
+</html>
